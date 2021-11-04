@@ -5,6 +5,14 @@ import dgram from "dgram";
 /** Initialise UDP Socket */
 const socketPort: number = 51510;
 const Server = dgram.createSocket('udp4');
+
+/** Handle errors and close Socket */
+Server.on('error', (err) => {
+    console.log(`Server error:\n${err.stack}`);
+    Server.close();
+});
+
+
 /** Launch UDP Socket and HTTP Servers, and listen on given port */
 try {
     Server.on('listening', (): void => {
