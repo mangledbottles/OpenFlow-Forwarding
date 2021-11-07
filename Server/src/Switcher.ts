@@ -4,22 +4,22 @@ import dgram from "dgram";
 
 /** Initialise UDP Socket */
 const socketPort: number = 51510;
-const Server = dgram.createSocket('udp4');
+const Switcher = dgram.createSocket('udp4');
 
 /** Handle errors and close Socket */
-Server.on('error', (err) => {
+Switcher.on('error', (err) => {
     console.log(`Server error:\n${err.stack}`);
-    Server.close();
+    Switcher.close();
 });
 
 /** Receive Messages from Client */
 let messagesCount = 0;
-Server.on('message', (msg, rinfo) => {
+Switcher.on('message', (msg, rinfo) => {
   console.log(`Server got: ${msg} from ${rinfo.address}:${rinfo.port}`);
 
   /** Add Client to Client List for Broadcasting */
   const { address, port } = rinfo;
-  Clients.add(newClient({ address, port }));
+  Routers.add(newClient({ address, port }));
 
   /** Repeat message back to Client */
   let message = Buffer.from(JSON.stringify({ type: 'switcher', message: `Hello ${rinfo.port}, you are #${++messagesCount}, time is ${new Date()}` }));
@@ -35,12 +35,16 @@ Server.on('message', (msg, rinfo) => {
 /** Broadcast Information from Server to all Clients */
 interface Client {
   address: string;
-  port: number;
+  port: number
+}
+interface Router extends Client {
+  in?: Router | Client;
+  out?: Router | Client;
 }
 
-let Clients: Set<string> = new Set();
+let Routers: Set<string> = new Set();
 
-function newClient({ address, port }: Client) {
+function newClient({ address, port }: Router) {
   return JSON.stringify({ address, port });
 }
 
@@ -48,7 +52,7 @@ function broadcast(broadcastMessage: string) {
   console.log("Broadcasting message to all Clients")
 
   var message = Buffer.from(JSON.stringify({ type: 'Switcher', message: broadcastMessage }));
-  const ClientList = Array.from(Clients);
+  const ClientList = Array.from(Routers);
   if (ClientList.length == 0) console.log("No active Clients");
 
   for (let clientNumber in ClientList) {
@@ -75,7 +79,7 @@ try {
     Switcher.bind(socketPort, (): void => {
       setInterval(() => {
         broadcast('Swticher is active')
-        console.log(Clients)
+        console.log(Routers)
       }, 5000)
       console.log(`Switcher UDP Datagram Server is active at http://localhost:${socketPort}`);
     });
