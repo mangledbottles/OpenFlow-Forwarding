@@ -23,7 +23,7 @@ Server.on('message', (msg, rinfo) => {
 
   /** Repeat message back to Client */
   let message = Buffer.from(JSON.stringify({ type: 'switcher', message: `Hello ${rinfo.port}, you are #${++messagesCount}, time is ${new Date()}` }));
-  Server.send(message, port, address, function (error) {
+  Switcher.send(message, port, address, function (error) {
     if (error) {
       console.log(`Error sending data to Client #${rinfo.port}`)
     } else {
@@ -54,7 +54,7 @@ function broadcast(broadcastMessage: string) {
   for (let clientNumber in ClientList) {
     const { address, port } = JSON.parse(ClientList[clientNumber]);
 
-    Server.send(message, 0, message.length, port, address, (error) => {
+    Switcher.send(message, 0, message.length, port, address, (error) => {
       if (error) {
         console.log(`Broadcast Error sending data to Client #${port}`)
       } else {
@@ -67,12 +67,12 @@ function broadcast(broadcastMessage: string) {
 
 /** Launch UDP Socket and HTTP Servers, and listen on given port */
 try {
-    Server.on('listening', (): void => {
-      const address = Server.address();
+    Switcher.on('listening', (): void => {
+      const address = Switcher.address();
       console.log(`Switcher Server listening ${address.address}:${address.port}`);
     });
   
-    Server.bind(socketPort, (): void => {
+    Switcher.bind(socketPort, (): void => {
       setInterval(() => {
         broadcast('Swticher is active')
         console.log(Clients)
