@@ -3,16 +3,16 @@
 import dgram from "dgram";
 
 /** Initialise UDP Socket */
-const socketPort: number = 51510;
-const Server = dgram.createSocket('udp4');
+const switcherPort: number = 51510;
+const Router = dgram.createSocket('udp4');
 
 /** Handle errors and close Socket */
-Server.on('error', (err) => {
+Router.on('error', (err) => {
     console.log(`Server error:\n${err.stack}`);
-    Server.close();
+    Router.close();
 });
 
-Server.on('message', (msg, senderInfo) => {
+Router.on('message', (msg, senderInfo) => {
     // console.log(msg.toString))
     const { type, message } = JSON.parse(msg.toString());
     console.log({ type, message })
@@ -23,10 +23,10 @@ Server.on('message', (msg, senderInfo) => {
 function connectToSwitcher() {
     // const routerPort: number =  Math.floor((Math.random() * 10) + 1);
     const message = Buffer.from('Router connecting to Switcher')
-    Server.send(message, socketPort, 'localhost', (err) => {
+    Router.send(message, switcherPort, 'localhost', (err) => {
         if (err) {
             console.log('Error sending data to Server')
-            Server.close();
+            Router.close();
         } else {
             console.log('Data sent to Server')
         }
