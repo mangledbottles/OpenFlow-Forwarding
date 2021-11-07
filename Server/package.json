@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "switcher": "nodemon ./src/Switcher.ts"
+    "switcher": "nodemon ./src/Switcher.ts",
+    "router": "ts-node ./src/Router.ts"
   },
   "keywords": [],
   "author": "",
