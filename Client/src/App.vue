@@ -3,18 +3,18 @@
     <!-- <img alt="Vue logo" src="./assets/logo.png" /> -->
     <n-space vertical>
       <n-card>
-        <n-form>
-          <n-form-item-row label="Peer">
-            <n-mention :options="peerOptions" default-value="@" />
+        <n-form :model="userModel" ref="userRef">
+          <n-form-item-row label="Peer" path="peer">
+            <n-mention :options="peerOptions" default-value="@" v-model:value="userModel.peer" />
           </n-form-item-row>
           <n-form-item-row label="Router">
-            <n-mention :options="routerOptions" default-value="@" />
+            <n-mention :options="routerOptions" default-value="@" v-model:value="userModel.router" />
           </n-form-item-row>
           <n-form-item-row label="Message">
-            <n-input maxlength="30" show-count clearable />
+            <n-input maxlength="30" show-count clearable v-model:value="userModel.message" />
           </n-form-item-row>
         </n-form>
-        <n-button type="primary" block>Connect and Send</n-button>
+        <n-button type="primary" v-on:click="formSubmit()">Connect and Send</n-button>
       </n-card>
     </n-space>
 
@@ -27,14 +27,10 @@
         "
       /> -->
     </n-card>
-    <!-- <var-button type="primary">Primary Button</var-button> -->
-    <!-- <hello-world-vue :count="1" /> -->
   </div>
 </template>
 
 <script lang="ts">
-// This starter template is using Vue 3 <script setup> SFCs
-// Check out https://v3.vuejs.org/api/sfc-script-setup.html#sfc-script-setup
 // import * as Client from './Client';
 import HelloWorldVue from "./components/HelloWorld.vue";
 
@@ -62,6 +58,13 @@ client.on('message', (msg: Buffer, info: any) => {
     console.log(`Received ${msg.length} bytes from ${info.address}:${info.port}\n`);
 });
 
+import { ref } from 'vue';
+const formModelRef = ref({
+  peer: '@',
+  router: '@',
+  message: ''
+})
+
 export default {
   name: "App",
   components: {
@@ -69,6 +72,8 @@ export default {
   },
   data() {
     return {
+      userModel: formModelRef,
+      peerValue: "a",
       peerOptions: [
         {
           label: "Alice",
@@ -103,6 +108,12 @@ export default {
       ],
     };
   },
+  methods: {
+    formSubmit: () => {
+      const { peer, router, message } = formModelRef.value;
+      console.log({ peer, router, message });
+    }
+  }
 };
 
 // console.log({ Client })
