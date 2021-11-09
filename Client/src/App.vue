@@ -19,13 +19,10 @@
     </n-space>
 
     <n-card title="Messaging">
-      <!-- <n-log
+      <n-log
         :rows="5"
-        :log="1234
-        1
-        eee
-        "
-      /> -->
+        :log="userLog"
+      />
     </n-card>
   </div>
 </template>
@@ -59,6 +56,8 @@ client.on('message', (msg: Buffer, info: any) => {
 });
 
 import { ref } from 'vue';
+import { useMessage } from 'naive-ui'
+
 const formModelRef = ref({
   peer: '@',
   router: '@',
@@ -100,6 +99,7 @@ export default {
     return {
       userModel: formModelRef,
       userRules,
+      userLog: "\n",
       peerValue: "a",
       peerOptions: [
         {
@@ -145,7 +145,6 @@ export default {
   }
 };
 
-// console.log({ Client })
 </script>
 
 <style>
