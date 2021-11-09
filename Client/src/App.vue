@@ -3,7 +3,7 @@
     <!-- <img alt="Vue logo" src="./assets/logo.png" /> -->
     <n-space vertical>
       <n-card>
-        <n-form :model="userModel" ref="userRef">
+        <n-form :model="userModel" ref="userRef" :rules="userRules">
           <n-form-item-row label="Peer" path="peer">
             <n-mention :options="peerOptions" default-value="@" v-model:value="userModel.peer" />
           </n-form-item-row>
@@ -65,14 +65,41 @@ const formModelRef = ref({
   message: ''
 })
 
+const userRules = {
+      peer: {
+        trigger: ['input', 'blur'],
+        required: true,
+        message: 'Peer is required',
+        validator() {
+          if(formModelRef.value.peer == "@") {
+            return Error('Peer is required')
+          }
+        }
+      },
+      router: {
+        router: ['input', 'blur'],
+        required: true,
+        message: 'Router is required',
+        validator () {
+          if (formModelRef.value.router == "@") {
+              return Error('Only one router allowed')
+          }
+        }
+      },
+      message: {
+        
+      }
+    }
+
 export default {
   name: "App",
   components: {
     HelloWorldVue,
   },
-  data() {
+  data: () => {
     return {
       userModel: formModelRef,
+      userRules,
       peerValue: "a",
       peerOptions: [
         {
