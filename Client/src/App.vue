@@ -31,32 +31,22 @@
 // import * as Client from './Client';
 import HelloWorldVue from "./components/HelloWorld.vue";
 
-const Dgram = require('dgram');
-const socketPort: number = 51510;
-const message = Buffer.from('UDP CONNETION DATA');
+// /** Send message to Server */
+// client.send(message, socketPort, 'localhost', (err: any) => {
+//   if (err) {
+//     console.log('Error sending data to Server')
+//     client.close();
+//   } else {
+//     console.log('Data sent to Server')
+//   }
+// });
+const Dgram = require("dgram");
+const client = Dgram.createSocket("udp4");
 
+// import * as Dgram from "dgram";
 
-/** Initialise UDP Socket */
-const client = Dgram.createSocket('udp4');
-
-/** Send message to Server */
-client.send(message, socketPort, 'localhost', (err: any) => {
-  if (err) {
-    console.log('Error sending data to Server')
-    client.close();
-  } else {
-    console.log('Data sent to Server')
-  }
-});
-
-/** Listen and handle incoming messages from Server */
-client.on('message', (msg: Buffer, info: any) => {
-    console.log(`Data received from server: ${msg.toString()}`);
-    console.log(`Received ${msg.length} bytes from ${info.address}:${info.port}\n`);
-});
-
-import { ref } from 'vue';
-import { useMessage } from 'naive-ui'
+import { ref } from "vue";
+import { useMessage } from "naive-ui";
 
 const formModelRef = ref({
   peer: '@',
@@ -150,6 +140,46 @@ export default {
   }
 };
 
+  mounted() {
+    const socketPort: number = 51510;
+    // const message = Buffer.from("UDP CONNETION DATA");
+    // /** Initialise UDP Socket */
+    // const client = Dgram.createSocket("udp4");
+    this.client = client;
+
+    // Connect to Switcher
+    this.getInformationFromSwitcher();
+
+    /** Listen and handle incoming messages from Server */
+    client.on("message", (msg: Buffer, info: any) => {
+      console.log(`Data received from server: ${msg.toString()}`);
+      let { type, message: receivedMessage } = JSON.parse(msg.toString());
+
+      if (type == 3) {
+        // Type 3: Message from Switcher
+        console.log(`Received message from Switcher: ${receivedMessage}`);
+        // this.logMessage(`Received message from Switcher: ${JSON.stringify(receivedMessage)}`);
+        let message = receivedMessage.message;
+        if (message.address && message.port) {
+          this.routerIp = message.address;
+          this.routerPort = message.port;
+          this.hasFirstRouter = true;
+          this.logMessage(`Router 1 has been detected on the Switcher Network`);
+        } else {
+          this.logMessage(
+            `Received message from Switcher: ${JSON.stringify(message)}`
+          );
+        }
+      }
+
+      // this.logMessage(`Received ${msg.length} bytes from ${info.address}:${info.port}`);
+
+      // console.log(
+      // `Received ${msg.length} bytes from ${info.address}:${info.port}\n`
+      // );
+    });
+  },
+};
 </script>
 
 <style>
