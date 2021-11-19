@@ -101,11 +101,11 @@ try {
     });
   
     Switcher.bind(socketPort, (): void => {
-      setInterval(() => {
-        broadcast('Swticher is active')
-        console.log(Routers)
-      }, 5000)
-      console.log(`Switcher UDP Datagram Server is active at http://localhost:${socketPort}`);
+      // setInterval(() => {
+      //   broadcast('Swticher is active')
+      //   console.log(Routers)
+      // }, 5000)
+      console.log(`Switcher UDP Datagram Server is active at ws://localhost:${socketPort}`);
     });
   
   } catch (error: any) {
