@@ -161,6 +161,18 @@ export default {
       this.logMessage(
         `Sending message '${message}' to peer ${peer} through router ${router}.`
       );
+    },
+    getInformationFromSwitcher: function () {
+      // Get information from switcher
+      // let sendMessage = Buffer.from("UDP CONNETION DATA");
+      console.log("getting information from switcher");
+      this.sendMessage(
+        3,
+        "client connecting to switcher",
+        "localhost",
+        this.socketPort
+      );
+    },
     sendMessage: function (type, message, ip, port) {
       let sendMessage = this.prepareMessage(type, message);
       console.log({ sendMessage, cli: this.client });
