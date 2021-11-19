@@ -156,6 +156,9 @@ export default {
       console.log("closing client");
       this.client.close();
     },
+    prepareMessage: function (type, message) {
+      return Buffer.from(JSON.stringify({ type, message }));
+    },
   mounted() {
     const socketPort: number = 51510;
     // const message = Buffer.from("UDP CONNETION DATA");
