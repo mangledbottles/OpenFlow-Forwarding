@@ -17,7 +17,7 @@
     "vue": "^3.2.16"
   },
   "devDependencies": {
-    "@types/node": "^16.11.6",
+    "@types/node": "^16.11.9",
     "@vitejs/plugin-vue": "^1.9.3",
     "concurrently": "^6.3.0",
     "cross-env": "^7.0.3",
