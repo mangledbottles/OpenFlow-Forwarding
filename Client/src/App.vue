@@ -152,6 +152,10 @@ export default {
         }
       });
     },
+    createNewClient: function () {
+      console.log("closing client");
+      this.client.close();
+    },
   mounted() {
     const socketPort: number = 51510;
     // const message = Buffer.from("UDP CONNETION DATA");
