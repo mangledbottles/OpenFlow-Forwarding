@@ -14,6 +14,17 @@ Switcher.on('error', (err) => {
 
 /** Receive Messages from Client */
 let messagesCount = 0;
+/**
+ * Format of Flow Table - Hardcoded Data
+ * 
+ * Parameter 1: Router
+ * Parameter 2: [ In, Out ]
+ *  */ 
+let FlowTable = new Map<String, String[]>([
+  ["R1", ["E1", "R2"]],
+  ["R2", ["R1", "R3"]],
+  ["R3", ["R2", "E2"]],
+]);
 Switcher.on('message', (msg, rinfo) => {
   console.log(`Server got: ${msg} from ${rinfo.address}:${rinfo.port}`);
 
