@@ -97,6 +97,11 @@ export default {
   },
   data: () => {
     return {
+      client: null,
+      hasFirstRouter: false,
+      routerIp: null,
+      routerPort: null,
+      socketPort: 51510,
       userModel: formModelRef,
       userRules,
       userLog: "\n",
