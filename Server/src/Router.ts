@@ -26,6 +26,15 @@ function connectToSwitcher() {
     const message = prepareMessage(1, "Router");
     sendMessageToSwitcher(message);
 }
+
+// Get information about Clients from Switcher from Flow Table
+function getFlowTableFromSwitcher() {
+    if(!routerId) return console.log("Router not connected to Switcher and cannot query");
+    const message = prepareMessage(2, { routerId });
+    sendMessageToSwitcher(message);
+}
+
+// Send message to Switcher
 function sendMessageToSwitcher(message: Buffer) {
     Router.send(message, switcherPort, 'localhost', (err) => {
         if (err) {
