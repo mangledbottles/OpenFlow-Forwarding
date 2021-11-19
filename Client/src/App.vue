@@ -197,6 +197,10 @@ export default {
         `${new Date().toTimeString().substring(0, 8)} ${message}\n` +
         this.userLog;
     },
+  },
+  updated() {
+    this.createNewClient();
+  },
   mounted() {
     const socketPort: number = 51510;
     // const message = Buffer.from("UDP CONNETION DATA");
