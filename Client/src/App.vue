@@ -139,6 +139,24 @@ export default {
     }
   }
 };
+      if (!this.hasFirstRouter) {
+        this.getInformationFromSwitcher();
+
+        return (
+          this.logMessage(
+            `Initial Router has not been detected on the Switcher Netowrk`
+          ),
+          this.logMessage(`Requesting information from Switcher for Router 1`)
+        );
+      }
+      // Send message
+      // let sendMessage = Buffer.from("UDP CONNETION DATA");
+      this.sendMessage(
+        5,
+        { message, peer },
+        this.routerIp,
+        this.routerPort
+      );
 
       this.logMessage(
         `Sending message '${message}' to peer ${peer} through router ${router}.`
