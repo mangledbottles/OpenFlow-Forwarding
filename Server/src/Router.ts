@@ -5,6 +5,7 @@ import dgram from "dgram";
 /** Initialise UDP Socket */
 const switcherPort: number = 51510;
 const Router = dgram.createSocket('udp4');
+let routerId: String;
 
 /** Handle errors and close Socket */
 Router.on('error', (err) => {
