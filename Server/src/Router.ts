@@ -20,10 +20,12 @@ Router.on('message', (msg, senderInfo) => {
     // console.log({ message: message.toString(), senderInfo });
 });
 
-/** Create router and send information to Switcher (IP and PORT) */
+// Connect router to Switcher
 function connectToSwitcher() {
-    // const routerPort: number =  Math.floor((Math.random() * 10) + 1);
-    const message = Buffer.from('Router connecting to Switcher')
+    if(routerId) return console.log("Router already connected to Switcher");
+    const message = prepareMessage(1, "Router");
+    sendMessageToSwitcher(message);
+}
     Router.send(message, switcherPort, 'localhost', (err) => {
         if (err) {
             console.log('Error sending data to Server')
