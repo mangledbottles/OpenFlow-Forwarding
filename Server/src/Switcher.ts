@@ -53,6 +53,18 @@ Switcher.on('message', (msg, rinfo) => {
       sendMessage = { routerId, message: "New Router", address, port };
       messageType = 0;
       break;
+  
+    case 2:
+      // Type 2: Current Router querying for information about Clients from Forwarding Table
+      console.log("Router querying for Clients");
+
+      // Query data on this router from Flow Table
+      routerId = receivedMessage.routerId;
+      let routerData = FlowTable.get(routerId);
+      let [ routerIn, routerOut ] = <String[]>routerData;
+      sendMessage = { routerIn, routerOut, routerId };
+      messageType = 4;
+      break;
   }
 
   // Send message to Client
