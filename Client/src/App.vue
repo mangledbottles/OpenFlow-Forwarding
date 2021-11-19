@@ -5,24 +5,36 @@
       <n-card>
         <n-form :model="userModel" ref="userRef" :rules="userRules">
           <n-form-item-row label="Peer" path="peer">
-            <n-mention :options="peerOptions" default-value="@" v-model:value="userModel.peer" />
+            <n-mention
+              :options="peerOptions"
+              default-value="@"
+              v-model:value="userModel.peer"
+            />
           </n-form-item-row>
           <n-form-item-row label="Router" path="router">
-            <n-mention :options="routerOptions" default-value="@" v-model:value="userModel.router" />
+            <n-mention
+              :options="routerOptions"
+              default-value="@"
+              v-model:value="userModel.router"
+            />
           </n-form-item-row>
           <n-form-item-row label="Message">
-            <n-input maxlength="30" show-count clearable v-model:value="userModel.message" />
+            <n-input
+              maxlength="30"
+              show-count
+              clearable
+              v-model:value="userModel.message"
+            />
           </n-form-item-row>
         </n-form>
-        <n-button type="primary" v-on:click="formSubmit()">Connect and Send</n-button>
+        <n-button type="primary" v-on:click="formSubmit()"
+          >Connect and Send</n-button
+        >
       </n-card>
     </n-space>
 
     <n-card title="Messaging">
-      <n-log
-        :rows="5"
-        :log="userLog"
-      />
+      <n-log :rows="5" :log="userLog" />
     </n-card>
   </div>
 </template>
@@ -49,36 +61,34 @@ import { ref } from "vue";
 import { useMessage } from "naive-ui";
 
 const formModelRef = ref({
-  peer: '@',
-  router: '@',
-  message: ''
-})
+  peer: "@",
+  router: "@",
+  message: "",
+});
 
 const userRules = {
-      peer: {
-        trigger: ['input', 'blur'],
-        required: true,
-        message: 'Peer is required',
-        validator() {
-          if(formModelRef.value.peer == "@") {
-            return Error('Peer is required')
-          }
-        }
-      },
-      router: {
-        router: ['input', 'blur'],
-        required: true,
-        message: 'Router is required',
-        validator () {
-          if (formModelRef.value.router == "@") {
-              return Error('Only one router allowed')
-          }
-        }
-      },
-      message: {
-        
+  peer: {
+    trigger: ["input", "blur"],
+    required: true,
+    message: "Peer is required",
+    validator() {
+      if (formModelRef.value.peer == "@") {
+        return Error("Peer is required");
       }
-    }
+    },
+  },
+  router: {
+    router: ["input", "blur"],
+    required: true,
+    message: "Router is required",
+    validator() {
+      if (formModelRef.value.router == "@") {
+        return Error("Only one router allowed");
+      }
+    },
+  },
+  message: {},
+};
 
 export default {
   name: "App",
@@ -131,14 +141,12 @@ export default {
     };
   },
   methods: {
-    formSubmit: function() {
+    formSubmit: function () {
       const { peer, router, message } = formModelRef.value;
-      if(peer.length == 1 || router.length == 1 || message.length < 1) return alert('Form not completed');
-      console.log({ peer, router, message });
-      this.userLog = `${(new Date().toTimeString().substring(0, 8))} Sending message '${message}' to peer ${peer} through router ${router}.\n` + this.userLog; 
-    }
-  }
-};
+      if (peer.length == 1 || router.length == 1 || message.length < 1)
+        return alert("Form not completed");
+      // console.log({ peer, router, message });
+
       if (!this.hasFirstRouter) {
         this.getInformationFromSwitcher();
 
