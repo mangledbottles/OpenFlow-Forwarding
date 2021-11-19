@@ -48,6 +48,13 @@ function sendMessageToRouter(message: Buffer, address: string, port: number): vo
       console.log('Data sent')
     }
   });
+}
+
+// Prepare message to be sent to Router
+function prepareMessage(type: number, message: any) {
+  return Buffer.from(JSON.stringify({ type, message }));
+}
+
 
 /** Broadcast Information from Server to all Clients */
 interface Client {
