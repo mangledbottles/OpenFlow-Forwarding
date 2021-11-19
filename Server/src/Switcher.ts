@@ -29,15 +29,38 @@ let routerCount = 0;
 Switcher.on('message', (msg, rinfo) => {
   console.log(`Server got: ${msg} from ${rinfo.address}:${rinfo.port}`);
 
-  /** Add Client to Client List for Broadcasting */
   const { address, port } = rinfo;
-  Routers.add(newClient({ address, port }));
+  let { type, message: receivedMessage } = JSON.parse(msg.toString());
 
-  /** Repeat message back to Client */
-  let message = Buffer.from(JSON.stringify({ type: 'switcher', message: `Hello ${rinfo.port}, you are #${++messagesCount}, time is ${new Date()}` }));
-  Switcher.send(message, port, address, function (error) {
-    if (error) {
-      console.log(`Error sending data to Client #${rinfo.port}`)
+  let sendMessage: any;
+  let messageType: number = -1;
+  let routerId: string;
+
+  switch (type) {
+
+    case 1:
+      // Type 1: New Router broadcasting existence
+      console.log("New Router detected");
+
+      // if(++routerCount == 1) {
+        // TODO: If this is the first Router, send the IP and Port to the Client ? Possible option
+      // }
+
+
+      // Assign ID to Router and add to Router List
+      routerId = `R${++routerCount}`;
+      Routers.add(newClient({ address, port, routerId }));
+      sendMessage = { routerId, message: "New Router", address, port };
+      messageType = 0;
+      break;
+  }
+
+  // Send message to Client
+  let message = prepareMessage(messageType, { origin: "switcher", serverTime: new Date(), message: sendMessage });
+  sendMessageToRouter(message, address, port);
+  
+});
+
 // Send message to Router
 function sendMessageToRouter(message: Buffer, address: string, port: number): void {
   Switcher.send(message, port, address, (err) => {
