@@ -140,6 +140,18 @@ export default {
   }
 };
 
+    sendMessage: function (type, message, ip, port) {
+      let sendMessage = this.prepareMessage(type, message);
+      console.log({ sendMessage, cli: this.client });
+      client.send(sendMessage, port, ip, (err: any) => {
+        if (err) {
+          console.log("Error sending data");
+          client.close();
+        } else {
+          console.log("Data sent");
+        }
+      });
+    },
   mounted() {
     const socketPort: number = 51510;
     // const message = Buffer.from("UDP CONNETION DATA");
