@@ -65,6 +65,21 @@ Switcher.on('message', (msg, rinfo) => {
       sendMessage = { routerIn, routerOut, routerId };
       messageType = 4;
       break;
+
+    case 3:
+      // Type 3: Client connecting to Router to get information about Forwarding Table
+      console.log("Client connecting to Switcher");
+
+      // Get first Router in Routers list
+      var it = Routers.values();
+      
+      let firstRouter = it.next().value;
+      // TODO: If no Routers are active, save Client details and notify once a Router is connected
+      if(!firstRouter) sendMessage = { message: "No Routers active on Network" };
+      else sendMessage = JSON.parse(firstRouter);
+      
+      messageType = 3;
+
   }
 
   // Send message to Client
