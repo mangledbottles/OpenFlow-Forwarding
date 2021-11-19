@@ -38,11 +38,16 @@ Switcher.on('message', (msg, rinfo) => {
   Switcher.send(message, port, address, function (error) {
     if (error) {
       console.log(`Error sending data to Client #${rinfo.port}`)
+// Send message to Router
+function sendMessageToRouter(message: Buffer, address: string, port: number): void {
+  Switcher.send(message, port, address, (err) => {
+    if (err) {
+      console.log('Error sending data')
+      Switcher.close();
     } else {
-      console.log(`Data sent to Client #${rinfo.port}`);
+      console.log('Data sent')
     }
   });
-});
 
 /** Broadcast Information from Server to all Clients */
 interface Client {
