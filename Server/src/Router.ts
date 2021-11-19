@@ -26,6 +26,7 @@ function connectToSwitcher() {
     const message = prepareMessage(1, "Router");
     sendMessageToSwitcher(message);
 }
+function sendMessageToSwitcher(message: Buffer) {
     Router.send(message, switcherPort, 'localhost', (err) => {
         if (err) {
             console.log('Error sending data to Server')
