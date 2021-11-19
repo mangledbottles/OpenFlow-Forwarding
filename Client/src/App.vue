@@ -140,6 +140,9 @@ export default {
   }
 };
 
+      this.logMessage(
+        `Sending message '${message}' to peer ${peer} through router ${router}.`
+      );
     sendMessage: function (type, message, ip, port) {
       let sendMessage = this.prepareMessage(type, message);
       console.log({ sendMessage, cli: this.client });
@@ -158,6 +161,11 @@ export default {
     },
     prepareMessage: function (type, message) {
       return Buffer.from(JSON.stringify({ type, message }));
+    },
+    logMessage: function (message) {
+      this.userLog =
+        `${new Date().toTimeString().substring(0, 8)} ${message}\n` +
+        this.userLog;
     },
   mounted() {
     const socketPort: number = 51510;
