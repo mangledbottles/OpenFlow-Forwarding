@@ -36,6 +36,10 @@ function connectToSwitcher() {
 connectToSwitcher();
 
 
+// Prepare message to be sent to Switcher
+function prepareMessage (type: number, message: any) {
+    return Buffer.from(JSON.stringify({ type, message }));
+}
 
 // /** Launch UDP Socket and HTTP Servers, and listen on given port */
 // try {
