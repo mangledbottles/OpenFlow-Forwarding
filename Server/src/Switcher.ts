@@ -114,12 +114,13 @@ interface Client {
 interface Router extends Client {
   in?: Router | Client;
   out?: Router | Client;
+  routerId: String;
 }
 
 let Routers: Set<string> = new Set();
 
-function newClient({ address, port }: Router) {
-  return JSON.stringify({ address, port });
+function newClient({ address, port, routerId }: Router) {
+  return JSON.stringify({ address, port, routerId });
 }
 
 function broadcast(broadcastMessage: string) {
