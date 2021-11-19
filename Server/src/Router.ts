@@ -46,26 +46,16 @@ function sendMessageToSwitcher(message: Buffer) {
     });
 }
 
-connectToSwitcher();
-
-
 // Prepare message to be sent to Switcher
 function prepareMessage (type: number, message: any) {
     return Buffer.from(JSON.stringify({ type, message }));
 }
 
-// /** Launch UDP Socket and HTTP Servers, and listen on given port */
-// try {
-//     Server.on('listening', (): void => {
-//       const address = Server.address();
-//       console.log(`Router listening ${address.address}:${address.port}`);
-//     });
 
-//     Server.bind(socketPort, (): void => {
-//         connectToSwitcher();
-//       console.log(`Router UDP Datagram Server is active at http://localhost:${socketPort}`);
-//     });
+// Connect to Switcher
+connectToSwitcher();
 
-//   } catch (error: any) {
-//     console.error(`An error occurred with starting Server ${error.toString()}`);
-//   }
+setTimeout(() => {
+    // After 3 seconds, get information about Clients from Switcher Flow Table
+    getFlowTableFromSwitcher();
+}, 3000);
