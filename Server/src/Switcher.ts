@@ -81,15 +81,7 @@ function broadcast(broadcastMessage: string) {
 
   for (let clientNumber in ClientList) {
     const { address, port } = JSON.parse(ClientList[clientNumber]);
-
-    Switcher.send(message, 0, message.length, port, address, (error) => {
-      if (error) {
-        console.log(`Broadcast Error sending data to Client #${port}`)
-      } else {
-        console.log(`Broadcast Data sent to Client #${port}`);
-      }
-    });
-
+    sendMessageToRouter(message, address, port);
   }
 }
 
