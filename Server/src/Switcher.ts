@@ -8,8 +8,8 @@ const Switcher = dgram.createSocket('udp4');
 
 /** Handle errors and close Socket */
 Switcher.on('error', (err) => {
-    console.log(`Server error:\n${err.stack}`);
-    Switcher.close();
+  console.log(`Server error:\n${err.stack}`);
+  Switcher.close();
 });
 
 /**
@@ -153,19 +153,18 @@ function broadcast(broadcastMessage: string) {
 
 /** Launch UDP Socket and HTTP Servers, and listen on given port */
 try {
-    Switcher.on('listening', (): void => {
-      const address = Switcher.address();
-      console.log(`Switcher Server listening ${address.address}:${address.port}`);
-    });
-  
-    Switcher.bind(socketPort, (): void => {
-      // setInterval(() => {
-      //   broadcast('Swticher is active')
-      //   console.log(Routers)
-      // }, 5000)
-      console.log(`Switcher UDP Datagram Server is active at ws://localhost:${socketPort}`);
-    });
-  
-  } catch (error: any) {
-    console.error(`An error occurred with starting Server ${error.toString()}`);
-  }
+    const address = Switcher.address();
+    console.log(`Switcher Server listening ${address.address}:${address.port}`);
+  });
+
+  Switcher.bind(socketPort, (): void => {
+    // setInterval(() => {
+    //   broadcast('Swticher is active')
+    //   console.log(Routers)
+    // }, 5000)
+    console.log(`Switcher UDP Datagram Server is active at ws://localhost:${socketPort}`);
+  });
+
+} catch (error: any) {
+  console.error(`An error occurred with starting Server ${error.toString()}`);
+}
