@@ -98,26 +98,39 @@ Switcher.on('message', (msg, rinfo) => {
       console.log("Client connecting to Switcher");
       messageType = 3;
 
-        // Get first Router in Routers list
-        var it = Routers.values();
-        
-        let firstRouter = it.next().value;
-        // TODO: If no Routers are active, save Client details and notify once a Router is connected
-        if(!firstRouter) return sendMessage = { message: "No Routers active on Network" };
-        else if(clientCount == 0) {
-          console.log("Initial Client Connected");
-          sendMessage = JSON.parse(firstRouter);
-        } else if(clientCount == 1) {
-          console.log("Receiving Client Connected");
-          // Store Client details for later use by last router
-          receivingClient.ip = address;
-          receivingClient.port = port;
-          sendMessage = "You are the receiving Client";
-        } else {
-          console.log("Additional Client connected, no space in Flow Table");
-          sendMessage = "You are not connected to the Network, no space.";
+      // Get first Router in Routers list
+      var it = Routers.values();
+
+      let firstRouter = it.next().value;
+      if (!firstRouter) return sendMessage = { message: "No Routers active on Network" };
+      else if (clientCount == 0) {
+        console.log("Initial Client Connected");
+        sendMessage = { message: 'You are the initial client. Router 1 has been detected on the Switcher Network', router: JSON.parse(firstRouter), count: clientCount };
+      } else if (clientCount == 1) {
+        console.log("Receiving Client Connected");
+
+        // Get Flow Table values for Receiving Client and update with address and port
+        let finalRouter = 'R3'; // Hardcoded
+        let flowTableValues = FlowTable.get(finalRouter);
+        if (flowTableValues) {
+          flowTableValues[4] = address.toString();
+          flowTableValues[5] = port.toString();
+          FlowTable.set(finalRouter, flowTableValues);
+
+          let [, , lastRouterAddress, lastRouterPort] = flowTableValues;
+          // Send message to last Router to inform that Receiving Client is active on Network
+          sendMessage = prepareMessage(6, { forwardAddress: address, forwardPort: port });
+          sendMessageToRouter(sendMessage, lastRouterAddress.toString(), lastRouterPort as unknown as number);
         }
-        clientCount++;
+
+        sendMessage = { message: "You are the receiving Client", router: JSON.parse(firstRouter), count: clientCount };
+      } else {
+        console.log("Additional Client connected, no space in Flow Table");
+        sendMessage = { message: "You are not connected to the Network, no space." };
+      }
+      clientCount++;
+
+      sendMessage = { ...sendMessage, client: { address, port } };
 
   }
 
