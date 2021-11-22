@@ -1,9 +1,13 @@
 const path = require('path');
 const { app, BrowserWindow } = require('electron');
+const {
+  default: installExtension,
+  VUEJS3_DEVTOOLS
+} = require("electron-devtools-installer");
 
 const isDev = process.env.IS_DEV == "true" ? true : false;
 
-function createWindow() {
+async function createWindow() {
   // Create the browser window.
   const mainWindow = new BrowserWindow({
     width: 800,
@@ -25,6 +29,11 @@ function createWindow() {
   );
   // Open the DevTools.
   if (isDev) {
+    // await installExtension([VUEJS3_DEVTOOLS]);
+    await installExtension({
+      id: 'ljjemllljcmogpfapbkkighbhhppjdbg',
+      electron: '>=1.2.1'
+    })
     mainWindow.webContents.openDevTools();
   }
 }
