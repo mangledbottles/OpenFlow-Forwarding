@@ -8,23 +8,22 @@ const Switcher = dgram.createSocket('udp4');
 
 /** Handle errors and close Socket */
 Switcher.on('error', (err) => {
-    console.log(`Server error:\n${err.stack}`);
-    Switcher.close();
+  console.log(`Server error:\n${err.stack}`);
+  Switcher.close();
 });
 
 /**
  * Format of Flow Table - Hardcoded Data
  * 
  * Parameter 1: Router
- * Parameter 2: [ In, Out ]
- *  */ 
+ * Parameter 2: [ In, Out, address, port, forwardAddress, forwardPort ]
+ *  */
 let FlowTable = new Map<String, String[]>([
-  ["R1", ["E1", "R2"]],
-  ["R2", ["R1", "R3"]],
-  ["R3", ["R2", "E2"]],
+  ["R1", ["E1", "R2", "", "", "", ""]],
+  ["R2", ["R1", "R3", "", "", "", ""]],
+  ["R3", ["R2", "E2", "", "", "", ""]],
 ]);
 
-let receivingClient = { ip: "", port: 0 };
 
 /** Receive Messages from Routers */
 let routerCount: number = 0, clientCount: number = 0;
@@ -37,7 +36,8 @@ Switcher.on('message', (msg, rinfo) => {
 
   let sendMessage: any;
   let messageType: number = -1;
-  let routerId: string;
+  let previousRouterId: String;
+  let routerId: String;
 
   switch (type) {
 
@@ -45,18 +45,42 @@ Switcher.on('message', (msg, rinfo) => {
       // Type 1: New Router broadcasting existence
       console.log("New Router detected");
 
-      // if(++routerCount == 1) {
-        // TODO: If this is the first Router, send the IP and Port to the Client ? Possible option
-      // }
-
-
       // Assign ID to Router and add to Router List
       routerId = `R${++routerCount}`;
+
+      // Update Current Router details in Flow Table
+      let currentFlowTable = FlowTable.get(routerId);
+      if (currentFlowTable) {
+        currentFlowTable[2] = address.toString();
+        currentFlowTable[3] = port.toString();
+      }
+
+      // Add Router to list of active connections
       Routers.add(newClient({ address, port, routerId }));
+
+      // Get Flow Table values of previous Router or Client, and update with address and port of forwarding Router
+      if (routerCount > 1) {
+        previousRouterId = `R${routerCount - 1}`;
+        let flowTableValues = FlowTable.get(previousRouterId) ?? [];
+        let previousAddress: string = flowTableValues[2] as string;
+        let previousPort: number = flowTableValues[3] as unknown as number;
+
+        // Update Flow Table next hop values (forwardAddress and forwardPort)
+        if (flowTableValues) {
+          flowTableValues[4] = address.toString();
+          flowTableValues[5] = port.toString();
+          FlowTable.set(previousRouterId, flowTableValues);
+        }
+
+        // Send message to previous Client / Router that its next router is active
+        sendMessage = prepareMessage(6, { forwardAddress: address, forwardPort: port });
+        sendMessageToRouter(sendMessage, previousAddress, previousPort);
+      }
+
       sendMessage = { routerId, message: "New Router", address, port };
       messageType = 0;
       break;
-  
+
     case 2:
       // Type 2: Current Router querying for information about Clients from Forwarding Table
       console.log("Router querying for Clients");
@@ -64,8 +88,8 @@ Switcher.on('message', (msg, rinfo) => {
       // Query data on this router from Flow Table
       routerId = receivedMessage.routerId;
       let routerData = FlowTable.get(routerId);
-      let [ routerIn, routerOut ] = <String[]>routerData;
-      sendMessage = { routerIn, routerOut, routerId };
+      let [routerIn, routerOut, routerAddress, routerPort, forwardAddress, forwardPort] = <String[]>routerData;
+      sendMessage = { routerIn, routerOut, routerId, address: routerAddress, port: routerPort, forwardAddress, forwardPort };
       messageType = 4;
       break;
 
@@ -74,33 +98,49 @@ Switcher.on('message', (msg, rinfo) => {
       console.log("Client connecting to Switcher");
       messageType = 3;
 
-        // Get first Router in Routers list
-        var it = Routers.values();
-        
-        let firstRouter = it.next().value;
-        // TODO: If no Routers are active, save Client details and notify once a Router is connected
-        if(!firstRouter) return sendMessage = { message: "No Routers active on Network" };
-        else if(clientCount == 0) {
-          console.log("Initial Client Connected");
-          sendMessage = JSON.parse(firstRouter);
-        } else if(clientCount == 1) {
-          console.log("Receiving Client Connected");
-          // Store Client details for later use by last router
-          receivingClient.ip = address;
-          receivingClient.port = port;
-          sendMessage = "You are the receiving Client";
-        } else {
-          console.log("Additional Client connected, no space in Flow Table");
-          sendMessage = "You are not connected to the Network, no space.";
+      // Get first Router in Routers list
+      var it = Routers.values();
+
+      let firstRouter = it.next().value;
+      if (!firstRouter) return sendMessage = { message: "No Routers active on Network" };
+      else if (clientCount == 0) {
+        console.log("Initial Client Connected");
+        sendMessage = { message: 'You are the initial client. Router 1 has been detected on the Switcher Network', router: JSON.parse(firstRouter), count: clientCount };
+      } else if (clientCount == 1) {
+        console.log("Receiving Client Connected");
+
+        // Get Flow Table values for Receiving Client and update with address and port
+        let finalRouter = 'R3'; // Hardcoded
+        let flowTableValues = FlowTable.get(finalRouter);
+        if (flowTableValues) {
+          flowTableValues[4] = address.toString();
+          flowTableValues[5] = port.toString();
+          FlowTable.set(finalRouter, flowTableValues);
+
+          let [, , lastRouterAddress, lastRouterPort] = flowTableValues;
+          // Send message to last Router to inform that Receiving Client is active on Network
+          sendMessage = prepareMessage(6, { forwardAddress: address, forwardPort: port });
+          sendMessageToRouter(sendMessage, lastRouterAddress.toString(), lastRouterPort as unknown as number);
         }
-        clientCount++;
+
+        sendMessage = { message: "You are the receiving Client", router: JSON.parse(firstRouter), count: clientCount };
+      } else {
+        console.log("Additional Client connected, no space in Flow Table");
+        sendMessage = { message: "You are not connected to the Network, no space." };
+      }
+      clientCount++;
+
+      sendMessage = { ...sendMessage, client: { address, port } };
 
   }
 
   // Send message to Client
   let message = prepareMessage(messageType, { origin: "switcher", serverTime: new Date(), message: sendMessage });
   sendMessageToRouter(message, address, port);
-  
+
+  // console.table(FlowTable.forEach((value, key) => { return [ key, value ] }));
+  console.log(FlowTable.entries());
+
 });
 
 // Send message to Router
@@ -153,19 +193,19 @@ function broadcast(broadcastMessage: string) {
 
 /** Launch UDP Socket and HTTP Servers, and listen on given port */
 try {
-    Switcher.on('listening', (): void => {
-      const address = Switcher.address();
-      console.log(`Switcher Server listening ${address.address}:${address.port}`);
-    });
-  
-    Switcher.bind(socketPort, (): void => {
-      // setInterval(() => {
-      //   broadcast('Swticher is active')
-      //   console.log(Routers)
-      // }, 5000)
-      console.log(`Switcher UDP Datagram Server is active at ws://localhost:${socketPort}`);
-    });
-  
-  } catch (error: any) {
-    console.error(`An error occurred with starting Server ${error.toString()}`);
-  }
+  Switcher.on('listening', (): void => {
+    const address = Switcher.address();
+    console.log(`Switcher Server listening ${address.address}:${address.port}`);
+  });
+
+  Switcher.bind(socketPort, (): void => {
+    // setInterval(() => {
+    //   broadcast('Swticher is active')
+    //   console.log(Routers)
+    // }, 5000)
+    console.log(`Switcher UDP Datagram Server is active at ws://localhost:${socketPort}`);
+  });
+
+} catch (error: any) {
+  console.error(`An error occurred with starting Server ${error.toString()}`);
+}
