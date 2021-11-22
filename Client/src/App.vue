@@ -126,8 +126,7 @@ export default {
   methods: {
     formSubmit: function () {
       const { message } = formModelRef.value;
-      if (message.length < 1)
-        return alert("Form not completed");
+      if (message.length < 1) return alert("Form not completed");
       // console.log({ peer, router, message });
 
       if (!this.hasFirstRouter) {
