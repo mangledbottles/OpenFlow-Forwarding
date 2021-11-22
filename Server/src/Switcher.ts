@@ -36,7 +36,8 @@ Switcher.on('message', (msg, rinfo) => {
 
   let sendMessage: any;
   let messageType: number = -1;
-  let routerId: string;
+  let previousRouterId: String;
+  let routerId: String;
 
   switch (type) {
 
@@ -46,6 +47,15 @@ Switcher.on('message', (msg, rinfo) => {
 
       // Assign ID to Router and add to Router List
       routerId = `R${++routerCount}`;
+
+      // Update Current Router details in Flow Table
+      let currentFlowTable = FlowTable.get(routerId);
+      if (currentFlowTable) {
+        currentFlowTable[2] = address.toString();
+        currentFlowTable[3] = port.toString();
+      }
+
+      // Add Router to list of active connections
       Routers.add(newClient({ address, port, routerId }));
       sendMessage = { routerId, message: "New Router", address, port };
       messageType = 0;
