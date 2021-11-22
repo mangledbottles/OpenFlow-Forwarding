@@ -81,6 +81,19 @@ Router.on('message', (msg, senderInfo) => {
     console.log(JSON.parse(msg.toString()));
 });
 
+function forwardMessage(message: Buffer, address: string, port: number) {
+    console.log(`Forwarding message ${message} to ${address}:${port}`);
+    Router.send(message, port, address, (err) => {
+        if (err) {
+            console.log('Error sending data to Server')
+            Router.close();
+        } else {
+            console.log('Data sent to Server')
+        }
+    });
+}
+
+
 // Connect router to Switcher
 function connectToSwitcher() {
     if (routerId) return console.log("Router already connected to Switcher");
