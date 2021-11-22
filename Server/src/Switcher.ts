@@ -137,6 +137,10 @@ Switcher.on('message', (msg, rinfo) => {
   // Send message to Client
   let message = prepareMessage(messageType, { origin: "switcher", serverTime: new Date(), message: sendMessage });
   sendMessageToRouter(message, address, port);
+
+  // console.table(FlowTable.forEach((value, key) => { return [ key, value ] }));
+  console.log(FlowTable.entries());
+
 });
 
 // Send message to Router
