@@ -57,6 +57,26 @@ Switcher.on('message', (msg, rinfo) => {
 
       // Add Router to list of active connections
       Routers.add(newClient({ address, port, routerId }));
+
+      // Get Flow Table values of previous Router or Client, and update with address and port of forwarding Router
+      if (routerCount > 1) {
+        previousRouterId = `R${routerCount - 1}`;
+        let flowTableValues = FlowTable.get(previousRouterId) ?? [];
+        let previousAddress: string = flowTableValues[2] as string;
+        let previousPort: number = flowTableValues[3] as unknown as number;
+
+        // Update Flow Table next hop values (forwardAddress and forwardPort)
+        if (flowTableValues) {
+          flowTableValues[4] = address.toString();
+          flowTableValues[5] = port.toString();
+          FlowTable.set(previousRouterId, flowTableValues);
+        }
+
+        // Send message to previous Client / Router that its next router is active
+        sendMessage = prepareMessage(6, { forwardAddress: address, forwardPort: port });
+        sendMessageToRouter(sendMessage, previousAddress, previousPort);
+      }
+
       sendMessage = { routerId, message: "New Router", address, port };
       messageType = 0;
       break;
