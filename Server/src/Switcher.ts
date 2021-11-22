@@ -24,7 +24,6 @@ let FlowTable = new Map<String, String[]>([
   ["R3", ["R2", "E2", "", "", "", ""]],
 ]);
 
-let receivingClient = { ip: "", port: 0 };
 
 /** Receive Messages from Routers */
 let routerCount: number = 0, clientCount: number = 0;
@@ -45,18 +44,13 @@ Switcher.on('message', (msg, rinfo) => {
       // Type 1: New Router broadcasting existence
       console.log("New Router detected");
 
-      // if(++routerCount == 1) {
-        // TODO: If this is the first Router, send the IP and Port to the Client ? Possible option
-      // }
-
-
       // Assign ID to Router and add to Router List
       routerId = `R${++routerCount}`;
       Routers.add(newClient({ address, port, routerId }));
       sendMessage = { routerId, message: "New Router", address, port };
       messageType = 0;
       break;
-  
+
     case 2:
       // Type 2: Current Router querying for information about Clients from Forwarding Table
       console.log("Router querying for Clients");
@@ -100,7 +94,6 @@ Switcher.on('message', (msg, rinfo) => {
   // Send message to Client
   let message = prepareMessage(messageType, { origin: "switcher", serverTime: new Date(), message: sendMessage });
   sendMessageToRouter(message, address, port);
-  
 });
 
 // Send message to Router
@@ -153,6 +146,7 @@ function broadcast(broadcastMessage: string) {
 
 /** Launch UDP Socket and HTTP Servers, and listen on given port */
 try {
+  Switcher.on('listening', (): void => {
     const address = Switcher.address();
     console.log(`Switcher Server listening ${address.address}:${address.port}`);
   });
