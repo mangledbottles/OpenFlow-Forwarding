@@ -57,8 +57,13 @@ Router.on('message', (msg, senderInfo) => {
             // Type 5: Message from Client - received message instructions from Client to send message over the network
             console.log("Client has sent message instructions");
 
-            // Request information about Clients from Switcher
-            connectToSwitcher();
+            if (currentRouter.routerId && currentRouter.forwardAddress && currentRouter.forwardPort) {
+                // Forward message to next Router or Client
+                forwardMessage(prepareMessage(5, receivedMessage), currentRouter.forwardAddress, currentRouter.forwardPort);
+            } else {
+                // Request information about Clients from Switcher
+                connectToSwitcher();
+            }
             break;
         case 6:
             // Type 6: Message from Switcher - updated information about this Router received
