@@ -131,15 +131,31 @@ export default {
       console.log(`Data received from server: ${msg.toString()}`);
       let { type, message: receivedMessage } = JSON.parse(Buffer.from(msg).toString());
 
+      let message = receivedMessage?.message;
       if (type == 3) {
         // Type 3: Message from Switcher
         console.log(`Received message from Switcher: ${receivedMessage}`);
-        let message = receivedMessage.message;
-        if (message.address && message.port) {
-          this.routerIp = message.address;
-          this.routerPort = message.port;
+        if (message.count === 0 || message.count === 1) {
+          this.routerIp = message.router.address;
+          this.routerPort = message.router.port;
+          this.clientIp = message.client.address;
+          this.clientPort = message.client.port;
           this.hasFirstRouter = true;
+          this.logMessage(message.message);
         }
+      } else if (type === 5) {
+        // Type 5: Received Message from Router
+        this.logMessage(
+          `Received message from Client through Network of Routers: ${message}, more details: ${JSON.stringify(
+            message
+          )}`
+        );
+      } else {
+        this.logMessage(
+          `Received message from Switcher: ${
+            message.message
+          }, more details: ${JSON.stringify(message)}`
+        );
       }
     });
   },
