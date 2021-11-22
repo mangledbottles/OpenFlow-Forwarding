@@ -24,8 +24,11 @@ let FlowTable = new Map<String, String[]>([
   ["R3", ["R2", "E2"]],
 ]);
 
+let receivingClient = { ip: "", port: 0 };
+
 /** Receive Messages from Routers */
-let routerCount = 0;
+let routerCount: number = 0, clientCount: number = 0;
+
 Switcher.on('message', (msg, rinfo) => {
   console.log(`Server got: ${msg} from ${rinfo.address}:${rinfo.port}`);
 
@@ -69,16 +72,28 @@ Switcher.on('message', (msg, rinfo) => {
     case 3:
       // Type 3: Client connecting to Router to get information about Forwarding Table
       console.log("Client connecting to Switcher");
-
-      // Get first Router in Routers list
-      var it = Routers.values();
-      
-      let firstRouter = it.next().value;
-      // TODO: If no Routers are active, save Client details and notify once a Router is connected
-      if(!firstRouter) sendMessage = { message: "No Routers active on Network" };
-      else sendMessage = JSON.parse(firstRouter);
-      
       messageType = 3;
+
+        // Get first Router in Routers list
+        var it = Routers.values();
+        
+        let firstRouter = it.next().value;
+        // TODO: If no Routers are active, save Client details and notify once a Router is connected
+        if(!firstRouter) return sendMessage = { message: "No Routers active on Network" };
+        else if(clientCount == 0) {
+          console.log("Initial Client Connected");
+          sendMessage = JSON.parse(firstRouter);
+        } else if(clientCount == 1) {
+          console.log("Receiving Client Connected");
+          // Store Client details for later use by last router
+          receivingClient.ip = address;
+          receivingClient.port = port;
+          sendMessage = "You are the receiving Client";
+        } else {
+          console.log("Additional Client connected, no space in Flow Table");
+          sendMessage = "You are not connected to the Network, no space.";
+        }
+        clientCount++;
 
   }
 
