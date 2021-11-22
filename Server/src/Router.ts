@@ -50,6 +50,8 @@ Router.on('message', (msg, senderInfo) => {
         case 4:
             // Type 4: Message from Server - received information about a Client
             console.log("Switcher has sent information about a Client");
+
+            currentRouter = receivedMessage.message;
             break;
         case 5:
             // Type 5: Message from Client - received message instructions from Client to send message over the network
