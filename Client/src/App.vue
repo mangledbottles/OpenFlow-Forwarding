@@ -12,20 +12,6 @@
     <n-space vertical>
       <n-card>
         <n-form :model="userModel" ref="userRef">
-          <!-- <n-form-item-row label="Peer" path="peer">
-            <n-mention
-              :options="peerOptions"
-              default-value="@"
-              v-model:value="userModel.peer"
-            />
-          </n-form-item-row>
-          <n-form-item-row label="Router" path="router">
-            <n-mention
-              :options="routerOptions"
-              default-value="@"
-              v-model:value="userModel.router"
-            />
-          </n-form-item-row> -->
           <n-form-item-row label="Message">
             <n-input
               maxlength="30"
@@ -48,22 +34,10 @@
 </template>
 
 <script lang="ts">
-// import * as Client from './Client';
-import HelloWorldVue from "./components/HelloWorld.vue";
 
-// /** Send message to Server */
-// client.send(message, socketPort, 'localhost', (err: any) => {
-//   if (err) {
-//     console.log('Error sending data to Server')
-//     client.close();
-//   } else {
-//     console.log('Data sent to Server')
-//   }
-// });
+// Import dependencies and initialise UDP Datagram Socket
 const Dgram = require("dgram");
 const client = Dgram.createSocket("udp4");
-
-// import * as Dgram from "dgram";
 
 import { ref } from "vue";
 import { useMessage } from "naive-ui";
@@ -89,46 +63,12 @@ export default {
       userModel: formModelRef,
       userLog: "\n",
       peerValue: "a",
-      peerOptions: [
-        {
-          label: "Alice",
-          value: "alice",
-        },
-        {
-          label: "Bob",
-          value: "bob",
-        },
-        {
-          label: "Admin",
-          value: "admin",
-        },
-      ],
-      routerOptions: [
-        {
-          label: "Router 1",
-          value: "R1",
-        },
-        {
-          label: "Router 2",
-          value: "R2",
-        },
-        {
-          label: "Router 3",
-          value: "R3",
-        },
-        {
-          label: "Router 4",
-          value: "R4",
-        },
-      ],
     };
   },
   methods: {
     formSubmit: function () {
       const { message } = formModelRef.value;
       if (message.length < 1) return alert("Form not completed");
-      // console.log({ peer, router, message });
-
       if (!this.hasFirstRouter) {
         this.getInformationFromSwitcher();
 
@@ -140,15 +80,12 @@ export default {
         );
       }
       // Send message
-      // let sendMessage = Buffer.from("UDP CONNETION DATA");
       this.sendMessage(5, { message }, this.routerIp, this.routerPort);
-
       this.logMessage(`Sending message '${message}' to peer through router 1.`);
     },
 
     getInformationFromSwitcher: function () {
       // Get information from switcher
-      // let sendMessage = Buffer.from("UDP CONNETION DATA");
       console.log("getting information from switcher");
       this.sendMessage(
         3,
@@ -159,7 +96,6 @@ export default {
     },
     sendMessage: function (type, message, ip, port) {
       let sendMessage = this.prepareMessage(type, message);
-      console.log({ sendMessage, cli: this.client });
       client.send(sendMessage, port, ip, (err: any) => {
         if (err) {
           console.log("Error sending data");
@@ -187,40 +123,24 @@ export default {
   },
   mounted() {
     const socketPort: number = 51510;
-    // const message = Buffer.from("UDP CONNETION DATA");
-    // /** Initialise UDP Socket */
-    // const client = Dgram.createSocket("udp4");
-    this.client = client;
-
     // Connect to Switcher
     this.getInformationFromSwitcher();
 
     /** Listen and handle incoming messages from Server */
     client.on("message", (msg: Buffer, info: any) => {
       console.log(`Data received from server: ${msg.toString()}`);
-      let { type, message: receivedMessage } = JSON.parse(msg.toString());
+      let { type, message: receivedMessage } = JSON.parse(Buffer.from(msg).toString());
 
       if (type == 3) {
         // Type 3: Message from Switcher
         console.log(`Received message from Switcher: ${receivedMessage}`);
-        // this.logMessage(`Received message from Switcher: ${JSON.stringify(receivedMessage)}`);
         let message = receivedMessage.message;
         if (message.address && message.port) {
           this.routerIp = message.address;
           this.routerPort = message.port;
           this.hasFirstRouter = true;
-          this.logMessage(`You are the initial client. Router 1 has been detected on the Switcher Network, message: ${JSON.stringify(message)}`);
-        } else {
-          this.logMessage(
-            `Received message from Switcher: ${JSON.stringify(message)}`
-          );
         }
       }
-      // this.logMessage(`Received ${msg.length} bytes from ${info.address}:${info.port}`);
-
-      // console.log(
-      // `Received ${msg.length} bytes from ${info.address}:${info.port}\n`
-      // );
     });
   },
 };
