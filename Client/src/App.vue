@@ -1,6 +1,14 @@
 <template>
   <div>
     <!-- <img alt="Vue logo" src="./assets/logo.png" /> -->
+    <n-row>
+      <n-col :span="12">
+        <n-statistic label="IP">{{ clientIp }}</n-statistic>
+      </n-col>
+      <n-col :span="12">
+        <n-statistic label="Port">{{ clientPort }}</n-statistic>
+      </n-col>
+    </n-row>
     <n-space vertical>
       <n-card>
         <n-form :model="userModel" ref="userRef">
@@ -75,6 +83,8 @@ export default {
       hasFirstRouter: false,
       routerIp: null,
       routerPort: null,
+      clientIp: null,
+      clientPort: null,
       socketPort: 51510,
       userModel: formModelRef,
       userLog: "\n",
