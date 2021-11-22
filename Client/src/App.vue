@@ -141,17 +141,11 @@ export default {
       }
       // Send message
       // let sendMessage = Buffer.from("UDP CONNETION DATA");
-      this.sendMessage(
-        5,
-        { message },
-        this.routerIp,
-        this.routerPort
-      );
+      this.sendMessage(5, { message }, this.routerIp, this.routerPort);
 
-      this.logMessage(
-        `Sending message '${message}' to peer through router 1.`
-      );
+      this.logMessage(`Sending message '${message}' to peer through router 1.`);
     },
+
     getInformationFromSwitcher: function () {
       // Get information from switcher
       // let sendMessage = Buffer.from("UDP CONNETION DATA");
