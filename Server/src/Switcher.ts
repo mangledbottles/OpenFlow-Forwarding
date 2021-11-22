@@ -16,12 +16,12 @@ Switcher.on('error', (err) => {
  * Format of Flow Table - Hardcoded Data
  * 
  * Parameter 1: Router
- * Parameter 2: [ In, Out ]
- *  */ 
+ * Parameter 2: [ In, Out, address, port, forwardAddress, forwardPort ]
+ *  */
 let FlowTable = new Map<String, String[]>([
-  ["R1", ["E1", "R2"]],
-  ["R2", ["R1", "R3"]],
-  ["R3", ["R2", "E2"]],
+  ["R1", ["E1", "R2", "", "", "", ""]],
+  ["R2", ["R1", "R3", "", "", "", ""]],
+  ["R3", ["R2", "E2", "", "", "", ""]],
 ]);
 
 let receivingClient = { ip: "", port: 0 };
