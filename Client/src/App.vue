@@ -3,8 +3,8 @@
     <!-- <img alt="Vue logo" src="./assets/logo.png" /> -->
     <n-space vertical>
       <n-card>
-        <n-form :model="userModel" ref="userRef" :rules="userRules">
-          <n-form-item-row label="Peer" path="peer">
+        <n-form :model="userModel" ref="userRef">
+          <!-- <n-form-item-row label="Peer" path="peer">
             <n-mention
               :options="peerOptions"
               default-value="@"
@@ -17,7 +17,7 @@
               default-value="@"
               v-model:value="userModel.router"
             />
-          </n-form-item-row>
+          </n-form-item-row> -->
           <n-form-item-row label="Message">
             <n-input
               maxlength="30"
@@ -61,34 +61,8 @@ import { ref } from "vue";
 import { useMessage } from "naive-ui";
 
 const formModelRef = ref({
-  peer: "@",
-  router: "@",
   message: "",
 });
-
-const userRules = {
-  peer: {
-    trigger: ["input", "blur"],
-    required: true,
-    message: "Peer is required",
-    validator() {
-      if (formModelRef.value.peer == "@") {
-        return Error("Peer is required");
-      }
-    },
-  },
-  router: {
-    router: ["input", "blur"],
-    required: true,
-    message: "Router is required",
-    validator() {
-      if (formModelRef.value.router == "@") {
-        return Error("Only one router allowed");
-      }
-    },
-  },
-  message: {},
-};
 
 export default {
   name: "App",
@@ -103,7 +77,6 @@ export default {
       routerPort: null,
       socketPort: 51510,
       userModel: formModelRef,
-      userRules,
       userLog: "\n",
       peerValue: "a",
       peerOptions: [
@@ -142,8 +115,8 @@ export default {
   },
   methods: {
     formSubmit: function () {
-      const { peer, router, message } = formModelRef.value;
-      if (peer.length == 1 || router.length == 1 || message.length < 1)
+      const { message } = formModelRef.value;
+      if (message.length < 1)
         return alert("Form not completed");
       // console.log({ peer, router, message });
 
@@ -161,13 +134,13 @@ export default {
       // let sendMessage = Buffer.from("UDP CONNETION DATA");
       this.sendMessage(
         5,
-        { message, peer },
+        { message },
         this.routerIp,
         this.routerPort
       );
 
       this.logMessage(
-        `Sending message '${message}' to peer ${peer} through router ${router}.`
+        `Sending message '${message}' to peer through router 1.`
       );
     },
     getInformationFromSwitcher: function () {
@@ -233,14 +206,13 @@ export default {
           this.routerIp = message.address;
           this.routerPort = message.port;
           this.hasFirstRouter = true;
-          this.logMessage(`Router 1 has been detected on the Switcher Network`);
+          this.logMessage(`You are the initial client. Router 1 has been detected on the Switcher Network, message: ${JSON.stringify(message)}`);
         } else {
           this.logMessage(
             `Received message from Switcher: ${JSON.stringify(message)}`
           );
         }
       }
-
       // this.logMessage(`Received ${msg.length} bytes from ${info.address}:${info.port}`);
 
       // console.log(
