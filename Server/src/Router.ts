@@ -33,6 +33,7 @@ Router.on('message', (msg, senderInfo) => {
     // Type 0: Message from Server - accepted this as new Router on network
     // Type 4: Message from Server - received information about a Client
     // Type 5: Message from Client - received message instructions from Client to send message over the network
+    // Type 6: Message from Server - received updated information about this current Router
 
     const { address, port } = senderInfo;
     let { type, message: receivedMessage } = JSON.parse(msg.toString());
@@ -56,6 +57,11 @@ Router.on('message', (msg, senderInfo) => {
             // Request information about Clients from Switcher
             connectToSwitcher();
             break;
+        case 6:
+            // Type 6: Message from Switcher - updated information about this Router received
+            currentRouter = { ...currentRouter, ...receivedMessage };
+            break;
+
         default:
             console.log("Unknown Message Type received");
             break;
