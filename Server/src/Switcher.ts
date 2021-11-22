@@ -88,8 +88,8 @@ Switcher.on('message', (msg, rinfo) => {
       // Query data on this router from Flow Table
       routerId = receivedMessage.routerId;
       let routerData = FlowTable.get(routerId);
-      let [ routerIn, routerOut ] = <String[]>routerData;
-      sendMessage = { routerIn, routerOut, routerId };
+      let [routerIn, routerOut, routerAddress, routerPort, forwardAddress, forwardPort] = <String[]>routerData;
+      sendMessage = { routerIn, routerOut, routerId, address: routerAddress, port: routerPort, forwardAddress, forwardPort };
       messageType = 4;
       break;
 
