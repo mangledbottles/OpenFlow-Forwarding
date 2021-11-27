@@ -6,6 +6,9 @@ import dgram from "dgram";
 const socketPort: number = 51510;
 const Switcher = dgram.createSocket('udp4');
 
+/** Import required Typescript Interfaces */
+import { Client, Router } from "./interfaces/Switcher.interface";
+
 /** Handle errors and close Socket */
 Switcher.on('error', (err) => {
   console.log(`Server error:\n${err.stack}`);
@@ -160,17 +163,7 @@ function prepareMessage(type: number, message: any) {
   return Buffer.from(JSON.stringify({ type, message }));
 }
 
-
 /** Broadcast Information from Server to all Clients */
-interface Client {
-  address: string;
-  port: number
-}
-interface Router extends Client {
-  in?: Router | Client;
-  out?: Router | Client;
-  routerId: String;
-}
 
 let Routers: Set<string> = new Set();
 
