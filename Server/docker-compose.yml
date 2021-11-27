@@ -1,0 +1,18 @@
+version: '3'
+services:
+  switcher:
+    build: .
+    command: [ "npm", "run", "switcher" ]
+    ports:
+      - "51510:51510/udp"
+  # router1:
+  #   build: .
+  #   command: [ "npm", "run", "router" ]
+  # router2:
+  #   build: .
+  #   command: [ "npm", "run", "router" ]
+  # router3:
+  #   build: .
+  #   command: [ "npm", "run", "router" ]
+  #   ports:
+  #     - "55000-60000:55000-60000/udp"
