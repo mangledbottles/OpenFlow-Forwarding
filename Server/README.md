@@ -38,6 +38,8 @@ When the network is filled out with 2 other Routers and a receiving Client, the 
 
 Router #1 will then forward the message to Router #2 and Router #2 will forward the message to Router #3 and Router #3 will forward the message to the receiving Client.
 
+![Flow Forwarding](../Assets/FlowForwarding.png)
+
 ## Dockerising the Switcher
 ![Dockerfile](../Assets/Dockerfile.png)
 
