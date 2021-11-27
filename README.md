@@ -1,5 +1,5 @@
 # OpenFlow UDP Socket Protocol
-![OpenFlow Network](assets/Network.png)
+![OpenFlow Network](Assets/Network.png)
 This project is an implementation of the OpenFlow Protocol using the NodeJS UDP Datagram Socket. 
 
 The core functionality of this system provides a front-end user interface for the client which connects to the OpenFlow Network.
