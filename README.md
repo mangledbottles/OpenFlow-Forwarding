@@ -5,6 +5,8 @@ This project is an implementation of the [OpenFlow Protocol](https://en.wikipedi
 
 The OpenFlow network consists of a number of **routers** that **forward message**s and are controlled by a centralised switcher.
 
+The switcher is a simple device that allows the routers to communicate with each other. It also allows the routers to communicate with the network.
+
 ## Project Structure
 This project is divided into the following sections:
 - [/Server](/Server)
@@ -22,6 +24,18 @@ cd OpenFlow-Forwarding
 # See documentation inside /Server for installation of NodeJS Switcher and Routers
 ```
 
+## Communication Protocol
+Communication between the Switcher, multiple Routers and multiple Clients is handled by a universal Protocol Type system.
+
+| Protocol Type | Description | Components |
+| ------------- | ----------- | ---------- |
+| #0 | Message from Server to Router - accepted this as new Router on network | Server -> Router |
+| #1             | New Router Detected on Network by Switcher | Router -> Switcher |
+| #2 | Router querying Switcher for information about Clients from Forwarding Table | Router -> Switcher |
+| #3 | Client connecting to Router to get information about Forwarding Table | Client -> Router |
+| #4 | Router received information about a Client from Switcher via Flowtable | Switcher -> Router |
+| #5 | Router received message instructions from Client to send message over the network | Client -> Router |
+| #6 | Router received updated information about current Router | Switcher -> Router |
 
 
 ## References
