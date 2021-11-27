@@ -27,7 +27,7 @@ cd OpenFlow-Forwarding
 ## Communication Protocol
 Communication between the Switcher, multiple Routers and multiple Clients is handled by a universal Protocol Type system.
 
-| Protocol Type | Description | Components [Origin, Destination] |
+| Protocol Type | Description | Components [Origin -> Destination] |
 | ------------- | ----------- | ---------- |
 | #0 | Switcher accepted this current Router on network | Switcher -> Router |
 | #1             | New Router Detected on Network by Switcher | Router -> Switcher |
