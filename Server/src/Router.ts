@@ -7,24 +7,16 @@ const switcherPort: number = 51510;
 const Router = dgram.createSocket('udp4');
 let routerId: String;
 
+/** Import required Typescript Interfaces */
+import { Router } from "./interfaces/Router.interface";
+
 /** Handle errors and close Socket */
 Router.on('error', (err) => {
     console.log(`Server error:\n${err.stack}`);
     Router.close();
 });
 
-interface Router {
-    routerIn?: String; // eg E1
-    routerOut?: String; // eg R2
-    routerId?: String; // eg R1
-    address?: String; // eg 127.0.0.1
-    port?: number; // eg 69902
-    forwardAddress?: string; // eg 127.0.0.1
-    forwardPort?: number; // eg 61984
-}
-
 let currentRouter: Router = {};
-
 
 // Listen for incoming messages from Clients and the Switcher
 Router.on('message', (msg, senderInfo) => {
@@ -76,11 +68,12 @@ Router.on('message', (msg, senderInfo) => {
             break;
     }
 
+    // Log message
     console.log({ currentRouter });
-
     console.log(JSON.parse(msg.toString()));
 });
 
+// Forward message to next Router or Client
 function forwardMessage(message: Buffer, address: string, port: number) {
     console.log(`Forwarding message ${message} to ${address}:${port}`);
     Router.send(message, port, address, (err) => {
