@@ -49,7 +49,6 @@ const formModelRef = ref({
 export default {
   name: "App",
   components: {
-    HelloWorldVue,
   },
   data: () => {
     return {
