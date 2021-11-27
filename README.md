@@ -10,9 +10,9 @@ The switcher is a simple device that allows the routers to communicate with each
 ## Project Structure
 This project is divided into the following sections:
 - [/Server](/Server)
-  - Writen in NodeJS using the [dgram](https://nodejs.org/api/dgram.html) module to create a Switcher and a number of Routers.
+  - Writen in NodeJS using the [dgram](https://nodejs.org/api/dgram.html) and [Typescript](https://www.typescriptlang.org/) module to create a Switcher and a number of Routers.
 - [/Client](/Client)
-  - An [ElectronJS](https://www.electronjs.org/) desktop GUI application which provides a user interface that connects to the OpenFlow Network (in /Server).
+  - An [ElectronJS](https://www.electronjs.org/) desktop GUI application which provides a user interface that connects to the OpenFlow Network (in /Server). Built with [VueJS](https://vuejs.org/) and [Typescript](https://www.typescriptlang.org/)
   
 ## Downloading Repository
 ```
