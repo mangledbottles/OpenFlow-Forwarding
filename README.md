@@ -57,7 +57,7 @@ The following diagram shows the communication between the Switcher, Routers and 
 
 | Hexadecimal Payload | Base10 Decoded |
 | ------------------- | -------------- |
-| 0000 0020 7b 22 74 79 70 65 22 3a 31 2c 22 6d 65 73 73 61 | {"type": 1, "messa} |
+| 0000 0020 7b 22 74 79 70 65 22 3a 31 2c 22 6d 65 73 73 61 | {"type": 1, "messa |
 | 0010 67 65 22 3a 22 52 6f 75 74 65 72 22 7d | ge":"Router"} |
 
 - Router on port 65469 is sending a message to the Switcher on port 51510 trying to join the network. 
