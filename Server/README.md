@@ -27,3 +27,10 @@ The Switcher is a NodeJS application that listens on port 51510 for OpenFlow mes
 
 ## Router
 The Router is a NodeJS application that can be started as many different processes to create multiple OpenFlow layers that connect together.
+
+
+<style type="text/css">
+    img {
+        width: 250px;
+    }
+</style>
