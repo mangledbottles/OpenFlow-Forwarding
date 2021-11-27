@@ -13,7 +13,7 @@ npm run router
 ```
 
 ## Switcher
-`Switcher.ts`
+`./src/Switcher.ts`
 
 The Switcher is a NodeJS application that listens on port 51510 for OpenFlow messages. The Switcher is responsible for managing the Routers and Clients.
 
@@ -26,7 +26,7 @@ The Switcher contains a FlowTable that is used to control the flow of traffic be
 
 
 ## Router
-`Router.ts`
+`./src/Router.ts`
 
 The Router is a NodeJS application that can be started as many different processes to create multiple OpenFlow layers that connect together.
 
